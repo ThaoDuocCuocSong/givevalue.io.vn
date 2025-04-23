@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So sánh Thể tích với Thiên thể Hệ Mặt Trời</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            background-color: #eaf2f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .result-section {
+            margin-top: 30px;
+        }
+        .planet-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+        .planet-card:hover {
+            transform: translateX(5px);
+            background-color: #eef7fb;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .formula {
+            background-color: #f0f0f0;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .planet-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        .comparison-result {
+            font-size: 16px;
+            margin-top: 8px;
+        }
+        .unit-info {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>So sánh Thể tích với Thiên thể Hệ Mặt Trời</h1>
+        <p style="text-align: center;">Nhập thể tích vật thể của bạn để so sánh với các thiên thể trong Hệ Mặt Trời</p>
+        
+        <div class="input-section">
+            <h2>Thông tin vật thể cần so sánh</h2>
+            <div class="formula">
+                Số lần lớn hơn = Thể tích thiên thể / Thể tích vật thể
+            </div>
+            
+            <label for="volume">Thể tích vật thể:</label>
+            <input type="number" id="volume" placeholder="Nhập thể tích" step="any" min="0">
+            
+            <select id="unit">
+                <option value="km3">Kilômét khối (km³)</option>
+                <option value="m3">Mét khối (m³)</option>
+                <option value="cm3">Xentimét khối (cm³)</option>
+                <option value="liters">Lít</option>
+            </select>
+            
+            <button onclick="calculateComparison()">So sánh</button>
+            
+            <p class="unit-info">Lưu ý: Thể tích các thiên thể được tính bằng km³. Chương trình sẽ tự động chuyển đổi đơn vị.</p>
+        </div>
+        
+        <div class="result-section" id="results" style="display: none;">
+            <h2>Kết quả so sánh</h2>
+            <p>Vật thể của bạn có thể tích <span id="input-volume-display" class="highlight"></span>.</p>
+            <p>Dưới đây là số lần các thiên thể lớn hơn vật thể của bạn:</p>
+            
+            <div id="planet-comparisons"></div>
+        </div>
+    </div>
+
+    <script>
+        // Thể tích các thiên thể (km³)
+        const CELESTIAL_VOLUMES = {
+            'sun': 1.41e18,
+            'mercury': 6.09e10,
+            'venus': 9.28e11,
+            'earth': 1.08e12,
+            'mars': 1.63e11,
+            'jupiter': 1.43e15,
+            'saturn': 8.27e14,
+            'uranus': 6.83e13,
+            'neptune': 6.25e13
+        };
+        
+        // Tên đầy đủ của các thiên thể
+        const CELESTIAL_NAMES = {
+            'sun': 'Mặt Trời',
+            'mercury': 'Sao Thủy',
+            'venus': 'Sao Kim',
+            'earth': 'Trái Đất',
+            'mars': 'Sao Hỏa',
+            'jupiter': 'Sao Mộc',
+            'saturn': 'Sao Thổ',
+            'uranus': 'Sao Thiên Vương',
+            'neptune': 'Sao Hải Vương'
+        };
+        
+        // Hệ số chuyển đổi đơn vị sang km³
+        const UNIT_CONVERSION = {
+            'km3': 1,
+            'm3': 1e-9,
+            'cm3': 1e-15,
+            'liters': 1e-12
+        };
+        
+        // Đơn vị hiển thị
+        const UNIT_DISPLAY = {
+            'km3': 'km³',
+            'm3': 'm³',
+            'cm3': 'cm³',
+            'liters': 'lít'
+        };
+        
+        function calculateComparison() {
+            const volumeInput = parseFloat(document.getElementById('volume').value);
+            const unit = document.getElementById('unit').value;
+            
+            if (isNaN(volumeInput) || volumeInput <= 0) {
+                alert('Vui lòng nhập thể tích hợp lệ (số dương)');
+                return;
+            }
+            
+            // Chuyển đổi thể tích nhập vào sang km³
+            const volumeKm3 = volumeInput * UNIT_CONVERSION[unit];
+            
+            if (volumeKm3 === 0) {
+                alert('Thể tích quá nhỏ để so sánh');
+                return;
+            }
+            
+            // Hiển thị thông tin đầu vào
+            document.getElementById('input-volume-display').textContent = 
+                `${volumeInput.toLocaleString()} ${UNIT_DISPLAY[unit]}`;
+            
+            // Tính toán và hiển thị kết quả
+            const resultsContainer = document.getElementById('planet-comparisons');
+            resultsContainer.innerHTML = '';
+            
+            for (const [planet, planetVolume] of Object.entries(CELESTIAL_VOLUMES)) {
+                const ratio = planetVolume / volumeKm3;
+                
+                const planetCard = document.createElement('div');
+                planetCard.className = 'planet-card';
+                
+                let displayRatio;
+                if (ratio >= 1e6) {
+                    displayRatio = ratio.toExponential(3).replace('+', '');
+                } else {
+                    displayRatio = Math.round(ratio).toLocaleString();
+                }
+                
+                planetCard.innerHTML = `
+                    <div class="planet-name">${CELESTIAL_NAMES[planet]}</div>
+                    <div class="comparison-result">
+                        Lớn hơn vật thể của bạn <span class="highlight">${displayRatio}</span> lần
+                    </div>
+                    <div class="formula">
+                        ${planetVolume.toExponential(3)} km³ / ${volumeKm3.toExponential(3)} km³ = ${ratio.toExponential(3)}
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(planetCard);
+            }
+            
+            // Hiển thị kết quả
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

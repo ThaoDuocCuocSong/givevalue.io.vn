@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đo chiều cao và cân nặng từ ảnh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            background-color: #ecf0f1;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 400px;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            display: none;
+        }
+        .reference-input {
+            margin: 15px 0;
+        }
+        input[type="number"] {
+            padding: 8px;
+            width: 100px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Đo chiều cao và cân nặng từ ảnh</h1>
+        
+        <p>Vui lòng tải lên hình ảnh chứa người hoặc vật thể cần đo. Để kết quả chính xác hơn, hãy chọn ảnh chụp toàn thân với góc nhìn thẳng.</p>
+        
+        <div class="upload-area" id="uploadArea">
+            <p>Kéo thả ảnh vào đây hoặc nhấp để chọn tệp</p>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        </div>
+        
+        <img id="imagePreview" style="display: none;">
+        
+        <div class="reference-input">
+            <label for="referenceHeight">Chiều cao tham chiếu (cm - nếu biết): </label>
+            <input type="number" id="referenceHeight" min="1" placeholder="Ví dụ: 175">
+            <span> (Chiều cao thực tế của 1 người/vật trong ảnh)</span>
+        </div>
+        
+        <button id="measureBtn" disabled>Đo chiều cao và cân nặng</button>
+        
+        <div class="result" id="result">
+            <h3>Kết quả:</h3>
+            <p id="heightResult">Chiều cao: </p>
+            <p id="weightResult">Cân nặng: </p>
+            <p><em>Lưu ý: Đây chỉ là ước lượng, kết quả có thể không chính xác.</em></p>
+        </div>
+    </div>
+
+    <script>
+        // Lấy các phần tử DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const measureBtn = document.getElementById('measureBtn');
+        const resultDiv = document.getElementById('result');
+        const heightResult = document.getElementById('heightResult');
+        const weightResult = document.getElementById('weightResult');
+        const referenceHeightInput = document.getElementById('referenceHeight');
+        
+        // Xử lý sự kiện khi click vào vùng upload
+        uploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+        
+        // Xử lý khi chọn file
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    measureBtn.disabled = false;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Xử lý kéo thả file
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#ecf0f1';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = '';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.match('image.*')) {
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    measureBtn.disabled = false;
+                    imageInput.files = e.dataTransfer.files;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Xử lý khi nhấn nút đo
+        measureBtn.addEventListener('click', () => {
+            if (!imagePreview.src) return;
+            
+            // Hiển thị loading
+            heightResult.textContent = "Chiều cao: Đang tính toán...";
+            weightResult.textContent = "Cân nặng: Đang tính toán...";
+            resultDiv.style.display = 'block';
+            
+            // Giả lập quá trình xử lý ảnh
+            setTimeout(() => {
+                // Lấy chiều cao tham chiếu nếu có
+                const referenceHeight = parseFloat(referenceHeightInput.value);
+                
+                // Tính toán giả định (trong thực tế cần thuật toán phức tạp hơn)
+                const imageHeight = imagePreview.naturalHeight;
+                const imageWidth = imagePreview.naturalWidth;
+                
+                // Giả sử tỷ lệ pixel/cm là 10:1 nếu không có tham chiếu
+                let pixelPerCm = 10;
+                
+                if (referenceHeight && !isNaN(referenceHeight)) {
+                    // Ước lượng chiều cao dựa trên tham chiếu
+                    // Giả sử người trong ảnh chiếm 80% chiều cao ảnh
+                    const personHeightInPixels = imageHeight * 0.8;
+                    pixelPerCm = personHeightInPixels / referenceHeight;
+                }
+                
+                // Tính chiều cao (giả sử đối tượng chiếm 80% chiều cao ảnh)
+                const estimatedHeight = (imageHeight * 0.8 / pixelPerCm).toFixed(1);
+                
+                // Ước lượng cân nặng (rất không chính xác, chỉ demo)
+                // Giả sử BMI trung bình 22 và tính cân nặng từ chiều cao
+                const estimatedWeight = (22 * Math.pow(estimatedHeight/100, 2)).toFixed(1);
+                
+                // Hiển thị kết quả
+                heightResult.textContent = `Chiều cao: ${estimatedHeight} cm`;
+                weightResult.textContent = `Cân nặng: ${estimatedWeight} kg`;
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

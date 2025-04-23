@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật ký sức khỏe hàng ngày</title>
+    <!-- Thêm thư viện html2canvas -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], 
+        input[type="number"], 
+        input[type="date"], 
+        input[type="time"],
+        textarea, 
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        .col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 200px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-container {
+            text-align: center;
+        }
+        .declaration {
+            font-style: italic;
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-left: 4px solid #e74c3c;
+        }
+        .signature {
+            margin-top: 50px;
+            text-align: right;
+        }
+        .signature input {
+            width: 200px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                padding: 0;
+                background: none;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="reportContent">
+        <h1>NHẬT KÝ SỨC KHỎE HÀNG NGÀY</h1>
+        
+        <form id="healthForm">
+            <!-- Phần 1: Thông tin cơ bản -->
+            <h2>1. Thông tin cơ bản</h2>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="date">Ngày:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="time">Giờ:</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="patientName">Tên bệnh nhân:</label>
+                        <input type="text" id="patientName" name="patientName" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="reporterName">Tên người khai hộ (nếu có):</label>
+                        <input type="text" id="reporterName" name="reporterName">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="medicalRecordNumber">Số bệnh án:</label>
+                        <input type="text" id="medicalRecordNumber" name="medicalRecordNumber">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="hospitalNumber">Số sổ bệnh viện:</label>
+                        <input type="text" id="hospitalNumber" name="hospitalNumber">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phần 2: Các chỉ số sinh tồn -->
+            <h2>2. Các chỉ số sinh tồn</h2>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="temperature">Nhiệt độ cơ thể (°C):</label>
+                        <input type="number" id="temperature" name="temperature" step="0.1" min="35" max="42">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="bloodPressure">Huyết áp (mmHg):</label>
+                        <input type="text" id="bloodPressure" name="bloodPressure" placeholder="VD: 120/80">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="heartRate">Nhịp tim (lần/phút):</label>
+                        <input type="number" id="heartRate" name="heartRate" min="30" max="200">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="respiratoryRate">Nhịp thở (lần/phút):</label>
+                        <input type="number" id="respiratoryRate" name="respiratoryRate" min="10" max="60">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="bloodSugarBefore">Đường huyết trước ăn (mmol/L):</label>
+                        <input type="number" id="bloodSugarBefore" name="bloodSugarBefore" step="0.1" min="2" max="30">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="bloodSugarAfter">Đường huyết sau ăn (mmol/L):</label>
+                        <input type="number" id="bloodSugarAfter" name="bloodSugarAfter" step="0.1" min="2" max="30">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="spo2">SpO2 (%):</label>
+                        <input type="number" id="spo2" name="spo2" min="70" max="100">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="weight">Cân nặng (kg):</label>
+                        <input type="number" id="weight" name="weight" step="0.1" min="20" max="200">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phần 3: Triệu chứng và tình trạng sức khỏe -->
+            <h2>3. Triệu chứng và tình trạng sức khỏe</h2>
+            <div class="form-group">
+                <label for="currentSymptoms">Các triệu chứng hiện tại:</label>
+                <textarea id="currentSymptoms" name="currentSymptoms" placeholder="Mô tả chi tiết các triệu chứng đang gặp phải (đau ở đâu, mức độ đau, tính chất cơn đau, khó thở, ho, sốt, buồn nôn, tiêu chảy,...)"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="symptomSeverity">Mức độ triệu chứng (thang điểm 1-10):</label>
+                <input type="number" id="symptomSeverity" name="symptomSeverity" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="symptomTime">Thời điểm xuất hiện triệu chứng:</label>
+                <input type="text" id="symptomTime" name="symptomTime" placeholder="VD: Sáng ngủ dậy, sau khi ăn trưa,...">
+            </div>
+            
+            <div class="form-group">
+                <label for="symptomFactors">Các yếu tố làm tăng hoặc giảm triệu chứng:</label>
+                <textarea id="symptomFactors" name="symptomFactors" placeholder="Mô tả những hoạt động, tư thế, hoặc thuốc men nào làm triệu chứng tốt hơn hoặc tệ hơn"></textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="mood">Tinh thần và tâm trạng:</label>
+                        <select id="mood" name="mood">
+                            <option value="">-- Chọn --</option>
+                            <option value="good">Tốt</option>
+                            <option value="normal">Bình thường</option>
+                            <option value="bad">Không tốt</option>
+                            <option value="depressed">Trầm cảm</option>
+                            <option value="anxious">Lo âu</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="sleepQuality">Chất lượng giấc ngủ:</label>
+                        <select id="sleepQuality" name="sleepQuality">
+                            <option value="">-- Chọn --</option>
+                            <option value="good">Tốt</option>
+                            <option value="normal">Bình thường</option>
+                            <option value="bad">Không ngon giấc</option>
+                            <option value="insomnia">Mất ngủ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sleepDetails">Chi tiết giấc ngủ:</label>
+                <textarea id="sleepDetails" name="sleepDetails" placeholder="Mô tả chất lượng giấc ngủ (ngủ được bao lâu, có bị tỉnh giấc không, cảm thấy thế nào khi thức dậy)"></textarea>
+            </div>
+            
+            <!-- Phần 4: Thuốc và điều trị -->
+            <h2>4. Thuốc và điều trị</h2>
+            <div class="form-group">
+                <label for="medications">Các loại thuốc đã dùng trong ngày:</label>
+                <textarea id="medications" name="medications" placeholder="Ghi rõ tên thuốc, liều lượng, thời điểm dùng và đường dùng"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="sideEffects">Tác dụng phụ (nếu có):</label>
+                <textarea id="sideEffects" name="sideEffects"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="otherTherapies">Các liệu pháp điều trị khác (nếu có):</label>
+                <textarea id="otherTherapies" name="otherTherapies" placeholder="Ví dụ: vật lý trị liệu, tập thể dục theo chỉ định, chế độ ăn đặc biệt"></textarea>
+            </div>
+            
+            <!-- Phần 5: Chế độ ăn uống -->
+            <h2>5. Chế độ ăn uống</h2>
+            <div class="form-group">
+                <label for="meals">Các bữa ăn trong ngày:</label>
+                <textarea id="meals" name="meals" placeholder="Ghi lại những gì đã ăn và uống"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="waterIntake">Lượng nước uống (ml):</label>
+                <input type="number" id="waterIntake" name="waterIntake" min="0" max="5000">
+            </div>
+            
+            <div class="form-group">
+                <label for="appetiteChanges">Sự thay đổi trong khẩu vị:</label>
+                <textarea id="appetiteChanges" name="appetiteChanges" placeholder="Ghi lại nếu có sự thay đổi nào trong cảm giác thèm ăn"></textarea>
+            </div>
+            
+            <!-- Phần 6: Các hoạt động trong ngày -->
+            <h2>6. Các hoạt động trong ngày</h2>
+            <div class="form-group">
+                <label for="dailyActivities">Mức độ hoạt động:</label>
+                <textarea id="dailyActivities" name="dailyActivities" placeholder="Mô tả các hoạt động đã thực hiện trong ngày (đi lại, làm việc nhà, tập thể dục,...)"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="activityFeelings">Cảm giác sau khi hoạt động:</label>
+                <textarea id="activityFeelings" name="activityFeelings" placeholder="Ghi lại nếu có bất kỳ sự khó chịu hoặc mệt mỏi nào sau khi vận động"></textarea>
+            </div>
+            
+            <!-- Phần 7: Các ghi chú khác -->
+            <h2>7. Các ghi chú khác</h2>
+            <div class="form-group">
+                <label for="otherNotes">Bất kỳ điều gì bất thường hoặc đáng chú ý khác:</label>
+                <textarea id="otherNotes" name="otherNotes" placeholder="Ví dụ: thay đổi về da, phát ban, sưng tấy, tiểu tiện, đại tiện,..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="questionsForDoctor">Các câu hỏi hoặc lo lắng muốn hỏi bác sĩ:</label>
+                <textarea id="questionsForDoctor" name="questionsForDoctor" placeholder="Để chuẩn bị cho lần thăm khám tiếp theo"></textarea>
+            </div>
+            
+            <!-- Cam kết -->
+            <div class="declaration">
+                <p><strong>Tôi cam kết trước pháp luật những điều đã khai báo về tình trạng sức khỏe của tôi là hoàn toàn sự thật.</strong></p>
+            </div>
+            
+            <div class="signature">
+                <p>Ngày <input type="date" id="reportDate" name="reportDate" required></p>
+                <p>Chữ ký bệnh nhân hoặc người khai hộ</p>
+                <p>............................................</p>
+            </div>
+            
+            <div class="btn-container no-print">
+                <button type="button" class="btn" onclick="generateReport()">Khai báo và Tạo báo cáo</button>
+                <button type="button" class="btn" onclick="printReport()">In báo cáo</button>
+                <button type="reset" class="btn">Làm mới</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Đặt ngày mặc định là hôm nay cho phần thông tin cơ bản
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Đặt giờ mặc định là giờ hiện tại
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('time').value = `${hours}:${minutes}`;
+        
+        // Đặt ngày mặc định cho phần cam kết (nhưng người dùng có thể thay đổi)
+        document.getElementById('reportDate').valueAsDate = new Date();
+        
+        // Hàm tạo báo cáo và tải về
+        function generateReport() {
+            // Kiểm tra các trường bắt buộc
+            if (!document.getElementById('patientName').value) {
+                alert('Vui lòng nhập tên bệnh nhân');
+                return;
+            }
+            
+            if (!document.getElementById('reportDate').value) {
+                alert('Vui lòng nhập ngày tạo báo cáo');
+                return;
+            }
+            
+            // Sử dụng html2canvas để chụp nội dung và tải về
+            const element = document.getElementById('reportContent');
+            
+            // Tùy chọn cho html2canvas
+            const options = {
+                scale: 2, // Tăng chất lượng ảnh
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            };
+            
+            // Hiển thị thông báo đang xử lý
+            alert('Đang tạo báo cáo, vui lòng chờ...');
+            
+            // Chụp nội dung và tải về
+            html2canvas(element, options).then(canvas => {
+                // Tạo link tải về
+                const link = document.createElement('a');
+                const fileName = 'Bao_cao_suc_khoe_' + 
+                                document.getElementById('patientName').value + '_' + 
+                                document.getElementById('date').value + '.png';
+                
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Thông báo thành công
+                alert('Báo cáo đã được tải về máy với tên: ' + fileName);
+            }).catch(err => {
+                console.error('Lỗi khi tạo báo cáo:', err);
+                alert('Có lỗi xảy ra khi tạo báo cáo. Vui lòng thử lại.');
+            });
+        }
+        
+        // Hàm in báo cáo
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

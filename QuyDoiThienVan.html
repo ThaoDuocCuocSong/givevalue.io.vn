@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy đổi Đơn vị Thiên văn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .converter {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-radius: 4px;
+        }
+        .formula {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quy đổi Đơn vị Thiên văn</h1>
+    <p>Chào bạn, hiện tại chúng ta đang ở trên Trái Đất và sử dụng các đơn vị đo lường thông thường. Dưới đây là công cụ giúp bạn quy đổi các đơn vị này sang đơn vị thiên văn.</p>
+
+    <div class="converter">
+        <h2>1. Quy đổi Khoảng cách</h2>
+        
+        <h3>Từ Kilômét (km) sang Năm Ánh Sáng (light-year)</h3>
+        <div class="formula">
+            Công thức: Số năm ánh sáng = Số km / 9.461 × 10<sup>12</sup>
+            <br>Hay: 1 km ≈ 1.057 × 10<sup>-13</sup> năm ánh sáng
+        </div>
+        <input type="number" id="km-to-ly" placeholder="Nhập số km" step="any">
+        <button onclick="convertKmToLy()">Quy đổi</button>
+        <div class="result" id="km-to-ly-result"></div>
+
+        <h3>Từ Kilômét (km) sang Đơn vị Thiên văn (AU)</h3>
+        <div class="formula">
+            Công thức: Số AU = Số km / 149.6 × 10<sup>6</sup>
+            <br>Hay: 1 km ≈ 6.684 × 10<sup>-9</sup> AU
+        </div>
+        <input type="number" id="km-to-au" placeholder="Nhập số km" step="any">
+        <button onclick="convertKmToAu()">Quy đổi</button>
+        <div class="result" id="km-to-au-result"></div>
+    </div>
+
+    <div class="converter">
+        <h2>2. Quy đổi Thời gian</h2>
+        <p>Lưu ý: Năm ánh sáng là đơn vị đo khoảng cách, không phải thời gian. Dưới đây là quy đổi thời gian Trái Đất sang đơn vị thiên văn.</p>
+        
+        <h3>Quy đổi thời gian sang Năm Julian</h3>
+        <div class="formula">
+            Công thức: 
+            <br>1 năm Julian = 365.25 ngày = 8766 giờ = 525960 phút = 31557600 giây
+        </div>
+        <input type="number" id="time-value" placeholder="Nhập giá trị" step="any">
+        <select id="time-unit">
+            <option value="seconds">Giây</option>
+            <option value="minutes">Phút</option>
+            <option value="hours">Giờ</option>
+            <option value="days">Ngày</option>
+            <option value="years">Năm (365.25 ngày)</option>
+        </select>
+        <button onclick="convertTime()">Quy đổi sang Năm Julian</button>
+        <div class="result" id="time-result"></div>
+    </div>
+
+    <div class="converter">
+        <h2>3. Quy đổi Vận tốc</h2>
+        <h3>Chuyển đổi vận tốc sang phần trăm tốc độ ánh sáng (% c)</h3>
+        
+        <div class="formula">
+            Tốc độ ánh sáng (c) ≈ 1,079,252,850 km/h ≈ 17,987,547,480 m/phút ≈ 299,792,458,000 mm/s
+        </div>
+        
+        <input type="number" id="speed-value" placeholder="Nhập giá trị vận tốc" step="any">
+        <select id="speed-unit">
+            <option value="kmh">km/giờ</option>
+            <option value="mmin">m/phút</option>
+            <option value="mms">mm/giây</option>
+        </select>
+        <button onclick="convertSpeed()">Quy đổi sang % c</button>
+        <div class="result" id="speed-result"></div>
+    </div>
+
+    <script>
+        // Hằng số
+        const KM_TO_LY = 9.461e12; // 1 năm ánh sáng = 9.461 x 10^12 km
+        const KM_TO_AU = 149.6e6;   // 1 AU = 149.6 x 10^6 km
+        const SECONDS_PER_YEAR = 31557600; // 1 năm Julian = 365.25 ngày = 31557600 giây
+        
+        // Tốc độ ánh sáng trong các đơn vị khác nhau
+        const C_KMH = 1079252850;     // km/h
+        const C_MMIN = 17987547480;   // m/phút
+        const C_MMS = 299792458000;   // mm/s
+
+        function convertKmToLy() {
+            const km = parseFloat(document.getElementById('km-to-ly').value);
+            if (isNaN(km)) {
+                alert("Vui lòng nhập số km hợp lệ");
+                return;
+            }
+            const ly = km / KM_TO_LY;
+            document.getElementById('km-to-ly-result').innerHTML = 
+                `${km} km = ${ly.toExponential(4)} năm ánh sáng ≈ ${ly.toFixed(16)} năm ánh sáng`;
+        }
+
+        function convertKmToAu() {
+            const km = parseFloat(document.getElementById('km-to-au').value);
+            if (isNaN(km)) {
+                alert("Vui lòng nhập số km hợp lệ");
+                return;
+            }
+            const au = km / KM_TO_AU;
+            document.getElementById('km-to-au-result').innerHTML = 
+                `${km} km = ${au.toExponential(4)} AU ≈ ${au.toFixed(10)} AU`;
+        }
+
+        function convertTime() {
+            const value = parseFloat(document.getElementById('time-value').value);
+            if (isNaN(value)) {
+                alert("Vui lòng nhập giá trị hợp lệ");
+                return;
+            }
+            
+            const unit = document.getElementById('time-unit').value;
+            let seconds;
+            
+            switch(unit) {
+                case 'seconds':
+                    seconds = value;
+                    break;
+                case 'minutes':
+                    seconds = value * 60;
+                    break;
+                case 'hours':
+                    seconds = value * 3600;
+                    break;
+                case 'days':
+                    seconds = value * 86400;
+                    break;
+                case 'years':
+                    seconds = value * SECONDS_PER_YEAR;
+                    break;
+                default:
+                    seconds = value;
+            }
+            
+            const years = seconds / SECONDS_PER_YEAR;
+            
+            let unitName;
+            switch(unit) {
+                case 'seconds': unitName = 'giây'; break;
+                case 'minutes': unitName = 'phút'; break;
+                case 'hours': unitName = 'giờ'; break;
+                case 'days': unitName = 'ngày'; break;
+                case 'years': unitName = 'năm'; break;
+            }
+            
+            document.getElementById('time-result').innerHTML = 
+                `${value} ${unitName} = ${years.toExponential(4)} năm Julian ≈ ${years.toFixed(10)} năm Julian`;
+        }
+
+        function convertSpeed() {
+            const value = parseFloat(document.getElementById('speed-value').value);
+            if (isNaN(value)) {
+                alert("Vui lòng nhập giá trị vận tốc hợp lệ");
+                return;
+            }
+            
+            const unit = document.getElementById('speed-unit').value;
+            let percentC;
+            let unitName;
+            
+            switch(unit) {
+                case 'kmh':
+                    percentC = (value / C_KMH) * 100;
+                    unitName = 'km/h';
+                    break;
+                case 'mmin':
+                    percentC = (value / C_MMIN) * 100;
+                    unitName = 'm/phút';
+                    break;
+                case 'mms':
+                    percentC = (value / C_MMS) * 100;
+                    unitName = 'mm/giây';
+                    break;
+                default:
+                    percentC = 0;
+            }
+            
+            document.getElementById('speed-result').innerHTML = 
+                `${value} ${unitName} = ${percentC.toExponential(4)}% tốc độ ánh sáng ≈ ${percentC.toFixed(12)}% tốc độ ánh sáng`;
+        }
+    </script>
+</body>
+</html>
